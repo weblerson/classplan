@@ -12,6 +12,29 @@ services:
       - .:/app
       - ./static:/app/static
       - ./media:/app/media
-    command: pipenv run python3.11 manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "pipenv run python3.11 manage.py migrate &&
+             pipenv run python3.11 manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
+
+  db:
+    container_name: db
+    image: postgres:alpine
+    volumes:
+      - ./django-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lerson" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
