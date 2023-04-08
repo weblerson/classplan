@@ -18,8 +18,26 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      tests:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
+
+  tests:
+    container_name: tests
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./static:/app/static
+      - ./media:/app/media
+    command: pipenv run python3.11 manage.py test
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     container_name: db
