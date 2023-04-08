@@ -35,10 +35,14 @@ class AuthenticationTest(test.APITestCase):
         self.assertIn('refresh', response.data)
 
     def test_token_refresh_view(self):
+        """
+        Tests the access token refresh using a previous refresh token.
+        """
+
         refresh = RefreshToken.for_user(self.user)
 
         data = {
-            'refresh', str(refresh)
+            'refresh': str(refresh)
         }
 
         response = self.client.post(self.token_refresh_view_url, data=data)
