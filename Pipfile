@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 django = "*"
-gunicorn = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 python-decouple = "*"
