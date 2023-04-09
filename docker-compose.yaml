@@ -1,17 +1,17 @@
 version: "3"
 
 services:
-  app:
+  backend:
     container_name: app-backend
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
-      - .:/app
-      - ./static:/app/static
-      - ./media:/app/media
+      - ./backend/:/app
+      - ./backend/static:/app/static
+      - ./backend/media:/app/media
     command: >
       sh -c "pipenv run python3.11 manage.py migrate &&
              pipenv run python3.11 manage.py runserver 0.0.0.0:8000"
@@ -26,14 +26,14 @@ services:
   tests:
     container_name: tests
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
-      - .:/app
-      - ./static:/app/static
-      - ./media:/app/media
+      - ./backend/:/app
+      - ./backend/static:/app/static
+      - ./backend/media:/app/media
     command: pipenv run python3.11 manage.py test
     depends_on:
       db:
@@ -43,7 +43,7 @@ services:
     container_name: db
     image: postgres:alpine
     volumes:
-      - ./django-db:/var/lib/postgresql/data
+      - ./backend/django-db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
