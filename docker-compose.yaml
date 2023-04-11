@@ -13,8 +13,8 @@ services:
       - ./backend/static:/app/static
       - ./backend/media:/app/media
     command: >
-      sh -c "pipenv run python3.11 manage.py migrate &&
-             pipenv run python3.11 manage.py runserver 0.0.0.0:8000"
+      sh -c "python3.11 manage.py migrate &&
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -34,7 +34,7 @@ services:
       - ./backend/:/app
       - ./backend/static:/app/static
       - ./backend/media:/app/media
-    command: pipenv run python3.11 manage.py test
+    command: python3.11 manage.py test
     depends_on:
       db:
         condition: service_healthy
@@ -43,7 +43,7 @@ services:
     container_name: db
     image: postgres:alpine
     volumes:
-      - ./backend/django-db:/var/lib/postgresql/data
+      - ./django-db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -64,6 +64,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend/app:/app
-    command: npm run serve
+    command: >
+      sh -c "while ! nc -z backend 8000; do sleep 1; done;
+             npm run serve"
     ports:
       - "8080:8080"
