@@ -15,7 +15,7 @@ RUN pip install pipenv
 COPY Pipfile .
 COPY Pipfile.lock .
 RUN pipenv --python 3.11
-RUN pipenv install
+RUN pipenv install --system --deploy --ignore-pipfile
 
 COPY . .
 

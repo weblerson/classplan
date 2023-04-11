@@ -9,6 +9,7 @@ djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 python-decouple = "*"
 psycopg2-binary = "*"
+gunicorn = "*"
 
 [dev-packages]
 
