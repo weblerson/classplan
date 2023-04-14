@@ -1,13 +1,23 @@
-FROM node:18-alpine
+FROM node:18-alpine AS build
 
 RUN mkdir /app
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 
 COPY . .
 
 RUN npm run build
 
-EXPOSE 8080
+
+FROM nginx:latest
+
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 5173
+
+CMD ["nginx", "-g", "daemon off;"]

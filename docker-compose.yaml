@@ -40,7 +40,7 @@ services:
         condition: service_healthy
 
   db:
-    container_name: db
+    container_name: database
     image: postgres:alpine
     volumes:
       - ./django-db:/var/lib/postgresql/data
@@ -64,8 +64,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend/app:/app
-    command: >
-      sh -c "while ! nc -z backend 8000; do sleep 1; done;
-             npm run serve"
+    depends_on:
+      - backend
     ports:
-      - "8080:8080"
+      - "80:5173"
