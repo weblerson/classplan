@@ -10,7 +10,7 @@ services:
       - .env
     volumes:
       - ./backend/:/app
-      - ./backend/static:/app/static
+      - ./backend/staticfiles:/app/staticfiles
       - ./backend/media:/app/media
     command: >
       sh -c "python3.11 manage.py migrate &&
@@ -32,7 +32,7 @@ services:
       - .env
     volumes:
       - ./backend/:/app
-      - ./backend/static:/app/static
+      - ./backend/staticfiles:/app/staticfiles
       - ./backend/media:/app/media
     command: python3.11 manage.py test
     depends_on:
@@ -64,6 +64,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend/app:/app
+      - ./backend/staticfiles:/app/staticfiles
+      - ./backend/media:/app/media
     depends_on:
       - backend
     ports:

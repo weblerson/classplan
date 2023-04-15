@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 RUN mkdir /app
-RUN mkdir /app/static
+RUN mkdir /app/staticfiles
 RUN mkdir /app/media
 WORKDIR /app
 
