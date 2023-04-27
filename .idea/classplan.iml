@@ -7,6 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/django-db" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/app/staticfiles" />
       <excludeFolder url="file://$MODULE_DIR$/staticfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/staticfiles" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
