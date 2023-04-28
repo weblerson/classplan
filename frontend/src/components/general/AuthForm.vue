@@ -1,5 +1,5 @@
 <template>
-<div class="container form-container-size">
+<div class="container bg-transparent">
     <div class="container d-flex justify-content-center">
         <p class="master-font text-light">Plano de Aula</p>
     </div>
@@ -13,13 +13,12 @@
             <hr class="border border-1 border-black mt-0 mb-0">
         </div>
 
-        <form action="{{ this.action }}" method="POST">
-            <!--First Input-->
-            <component :is="this.firstInput" />
+        <!--Inputs-->
+        <slot />
 
-            <!--Second Input-->
-            <component :is="this.secondInput" />
-        </form>
+        <div class="mt-3 d-grid col-4 mx-auto">
+            <input class="btn btn-dark btn-lg" type="submit" value="Enviar">
+        </div>
     </div>
 </div>
 </template>
@@ -39,18 +38,6 @@ export default {
             type: String,
             required: true
         },
-        action: {
-            type: String,
-            required: true
-        },
-        firstInput: {
-            type: FormInput,
-            required: true
-        },
-        secondInput: {
-            type: FormInput,
-            required: true
-        }
     }
 }
 </script>
@@ -76,19 +63,9 @@ export default {
     text-align: center;
 }
 
-.label-font {
-    font-family: 'Carrois Gothic', serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 50px;
-    
-    color: #000000;
-}
-
 .form-container-size {
-    width: 48vw;
-    height: 47vh;
+    width: 50vw;
+    height: 55vh;
 
     box-shadow: 0 4px 20px 10px rgba(0, 0, 0, 0.5);
 }
