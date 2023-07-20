@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  tests:
+    container_name: tests
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env-test
+    volumes:
+      - ./backend/:/app
+    command: python3.11 manage.py test
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    driver: bridge

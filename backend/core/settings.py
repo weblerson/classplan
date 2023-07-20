@@ -108,15 +108,23 @@ SIMPLE_JWT = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_USER', cast=str),
-        'USER': config('POSTGRES_USER', cast=str),
-        'PASSWORD': config('POSTGRES_PASSWORD', cast=str),
-        'HOST': config('POSTGRES_HOST', cast=str),
-        'PORT': config('POSTGRES_PORT', cast=int),
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': config('POSTGRES_USER', cast=str),
+        # 'USER': config('POSTGRES_USER', cast=str),
+        # 'PASSWORD': config('POSTGRES_PASSWORD', cast=str),
+        # 'HOST': config('POSTGRES_HOST', cast=str),
+        # 'PORT': config('POSTGRES_PORT', cast=int),
     }
 }
 
+DJANGO_PROFILE = config('DJANGO_PROFILE', cast=str)
+if DJANGO_PROFILE == 'test':
+    DATABASES.update({
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db.sqlite3'
+        }
+    })
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
