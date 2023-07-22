@@ -129,6 +129,17 @@ elif DJANGO_PROFILE == 'dev':
             'PORT': config('DEV_POSTGRES_PORT', cast=int),
         }
     })
+elif DJANGO_PROFILE == 'prod':
+    DATABASES.update({
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('PROD_POSTGRES_USER', cast=str),
+            'USER': config('PROD_POSTGRES_USER', cast=str),
+            'PASSWORD': config('PROD_POSTGRES_PASSWORD', cast=str),
+            'HOST': config('PROD_POSTGRES_HOST', cast=str),
+            'PORT': config('PROD_POSTGRES_PORT', cast=int),
+        }
+    })
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
