@@ -1,0 +1,64 @@
+version: "3.7"
+
+services:
+  backend:
+    container_name: dev-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env-dev
+    volumes:
+      - ./backend/:/app
+      - ./backend/staticfiles:/app/staticfiles
+      - ./backend/media:/app/media
+    command: >
+      sh -c "python3.11 manage.py migrate &&
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - django-network
+
+  db:
+    container_name: dev-database
+    image: postgres:alpine
+    volumes:
+      - ./dev-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env-dev
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      - django-network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/app:/app
+      - ./backend/staticfiles:/app/staticfiles
+      - ./backend/media:/app/media
+    depends_on:
+      - backend
+    ports:
+      - "80:5173"
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    driver: bridge
