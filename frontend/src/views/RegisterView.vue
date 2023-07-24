@@ -1,13 +1,13 @@
 <template>
   <div class="background-image d-flex justify-content-center align-items-center">
       <div class="d-flex align-items-center">
-          <AuthForm :title="this.title" />
+          <RegisterForm :title="this.title" />
       </div>
   </div>
 </template>
 
 <script>
-import AuthForm from "@/components/general/AuthForm.vue";
+import RegisterForm from "@/components/register/RegisterForm.vue";
 
 document.title = 'Cadastre-se';
 
@@ -21,7 +21,7 @@ export default {
     },
 
     components: {
-        AuthForm,
+        RegisterForm,
     }
 }
 </script>

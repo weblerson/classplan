@@ -15,7 +15,7 @@
 
         <!--Inputs-->
         <FormInput ref="usernameFormInput" v-bind="this.inputProps1" />
-        <FormInput ref="emailFormInput" v-bind="this.inputProps2" />
+        <FormInput ref="passwordFormInput" v-bind="this.inputProps2" />
 
         <div class="mt-3 d-grid col-4 mx-auto">
             <input class="btn btn-dark btn-lg" type="submit" value="Enviar" @click="submitForm">
@@ -43,10 +43,10 @@ export default {
           type: "text"
         },
         inputProps2: {
-          id: "email",
-          label: "E-mail",
-          name: "email",
-          type: "email"
+          id: "password",
+          label: "Senha",
+          name: "password",
+          type: "password"
         }
       }
   },
@@ -61,11 +61,11 @@ export default {
   methods: {
     submitForm() {
       const username = this.$refs.usernameFormInput.getValue();
-      const email = this.$refs.emailFormInput.getValue();
+      const password = this.$refs.passwordFormInput.getValue();
 
-      // Register request code
+      // Login request code
 
-      return console.log(`Username: ${username}\nEmail: ${email}`);
+      return console.log(`Username: ${username}\nSenha: ${password}`);
     }
   }
 }
