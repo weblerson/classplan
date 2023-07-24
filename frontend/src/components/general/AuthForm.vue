@@ -14,10 +14,11 @@
         </div>
 
         <!--Inputs-->
-        <slot />
+        <FormInput ref="usernameFormInput" v-bind="this.inputProps1" />
+        <FormInput ref="emailFormInput" v-bind="this.inputProps2" />
 
         <div class="mt-3 d-grid col-4 mx-auto">
-            <input class="btn btn-dark btn-lg" type="submit" value="Enviar">
+            <input class="btn btn-dark btn-lg" type="submit" value="Enviar" @click="submitForm">
         </div>
     </div>
 </div>
@@ -33,12 +34,40 @@ export default {
         FormInput
     },
 
+  data() {
+      return {
+        inputProps1: {
+          id: "username",
+          label: "Nome de Usuário",
+          name: "username",
+          type: "text"
+        },
+        inputProps2: {
+          id: "email",
+          label: "E-mail",
+          name: "email",
+          type: "email"
+        }
+      }
+  },
+
     props: {
         title: {
             type: String,
             required: true
         },
+    },
+
+  methods: {
+    submitForm() {
+      const username = this.$refs.usernameFormInput.getValue();
+      const email = this.$refs.emailFormInput.getValue();
+
+      // Register request code
+
+      return console.log(`Username: ${username}\nEmail: ${email}`);
     }
+  }
 }
 </script>
 
