@@ -6,8 +6,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    env_file:
-      - .env-dev
     volumes:
       - ./backend/:/app
       - ./backend/staticfiles:/app/staticfiles
