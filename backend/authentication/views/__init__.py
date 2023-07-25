@@ -1,1 +1,1 @@
-from .RegisterView import RegisterView
+from .register_view import RegisterView
