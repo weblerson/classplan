@@ -14,7 +14,7 @@ services:
       - ./backend/media:/app/media
     command: >
       sh -c "python3.11 manage.py migrate &&
-             gunicorn core.wsgi:application --bind 0.0.0.0:8000"
+             python3.11 manage.py runserver 0.0.0.0:8000"
     depends_on:
       db:
         condition: service_healthy
