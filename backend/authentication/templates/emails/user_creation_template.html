@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <section class="container text-start">
+        <p class="h3">Olá, {{ full_name }}</p>
+    </section>
+{% endblock header %}
+
+{% block main %}
+    <section class="container text-start">
+        <p class="lead">
+            Foi solicitado um e-mail de confirmação de conta na plataforma {{ platform_name }} com seu
+            endereço de e-mail.
+        </p>
+    </section>
+
+    <section class="container">
+        <p class="lead">
+            Se você solicitou esse e-mail, clique no link abaixo para confirmar seu cadastro.
+            Senão, ignore.
+        </p>
+    </section>
+
+    <a href="{{ confirmation_link }}"
+       class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+        Confirmar cadastro
+    </a>
+{% endblock main %}
