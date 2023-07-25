@@ -1,11 +1,5 @@
-from django.contrib.auth.models import AbstractUser
+from .user import User
 from django.db import models
-
-
-class User(AbstractUser):
-
-    def __str__(self) -> str:
-        return self.username
 
 
 class UserActivationToken(models.Model):
