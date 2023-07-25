@@ -1,0 +1,2 @@
+from .authentication_tests import AuthenticationTest
+from .register_tests import RegisterTests

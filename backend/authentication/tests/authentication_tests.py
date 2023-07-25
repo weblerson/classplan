@@ -5,7 +5,7 @@ from rest_framework import status
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
+from authentication.models import User
 
 
 class AuthenticationTest(test.APITestCase):
