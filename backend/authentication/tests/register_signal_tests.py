@@ -13,8 +13,7 @@ class RegisterSignalTests(test.APITestCase):
             'username': 'testUser',
             'email': 'test@test.com',
             'first_name': 'test',
-            'last_name': 'user',
-            'password': 'testPassword'
+            'last_name': 'user'
         }
 
         post_save.connect(send_user_email, sender=User, dispatch_uid='send_email_user_register')

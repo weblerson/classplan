@@ -15,7 +15,6 @@ class RegisterTests(test.APITestCase):
             'email': 'test@test.com',
             'first_name': 'test',
             'last_name': 'user',
-            'password': 'testPassword'
         }
 
         cls.data = data
@@ -121,3 +120,12 @@ class RegisterTests(test.APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('last_name', response.data)
+
+    def test_if_password_is_not_on_response_body(self):
+        """
+        Tests if password key is not on response body
+        """
+
+        response = self.client.post(reverse('register_user'), data=self.data)
+
+        self.assertNotIn('password', response.data)
