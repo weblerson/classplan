@@ -8,9 +8,46 @@ services:
       dockerfile: Dockerfile.dev
     env_file:
       - test.env
+    depends_on:
+      worker:
+        condition: service_healthy
     volumes:
       - ./backend/:/app
     command: python3.11 manage.py test
+    networks:
+      - django-network
+
+  rabbitmq:
+    container_name: test-rabbitmq-broker
+    image: rabbitmq:alpine
+    ports:
+      - "5672:5672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - django-network
+
+  worker:
+    container_name: test-worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - dev.env
+    volumes:
+      - ./backend/:/app
+      - ./test-worker-logs:/app/logs
+    command: celery -A core worker -l INFO -f /app/logs/celery.log
+    depends_on:
+      - rabbitmq
+    healthcheck:
+      test: [ "CMD-SHELL", "celery -A core inspect ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - django-network
 

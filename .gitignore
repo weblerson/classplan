@@ -166,3 +166,4 @@ dev-db/
 dev-broker/
 broker/
 staticfiles/
+test-worker-logs/
