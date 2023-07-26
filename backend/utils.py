@@ -1,5 +1,3 @@
-import string
-
 from django.core.mail import EmailMultiAlternatives, BadHeaderError
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -25,7 +23,7 @@ class Utils:
             msg.send()
 
         except BadHeaderError as e:
-            print(f'Error: {e}')
+            raise BadHeaderError(e)
 
     @staticmethod
     def create_random_password() -> str:

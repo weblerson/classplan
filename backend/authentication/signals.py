@@ -7,13 +7,15 @@ from hashlib import sha256
 
 from .models import UserActivationToken
 
+from .tasks import send_email_task
+
 from decouple import config
 
 from utils import Utils
 
 
 @receiver(post_save, sender=User, dispatch_uid='send_email_user_register')
-def send_user_email(sender, instance, created, **kwargs):
+def send_user_email(sender, instance, created, **kwargs) -> None:
 
     if created:
         subject = 'Classplan - Confirmação de Conta'
@@ -40,7 +42,7 @@ def send_user_email(sender, instance, created, **kwargs):
             'confirmation_link': confirmation_link
         }
 
-        return Utils.send_email(
+        send_email_task.delay(
             template_path=settings.USER_CREATION_TEMPLATE_PATH,
             subject=subject,
             to=[instance.email],

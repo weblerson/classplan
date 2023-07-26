@@ -200,3 +200,12 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Celery
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TIMEZONE = 'America/Manaus'
+CELERY_ENABLE_UTC = True

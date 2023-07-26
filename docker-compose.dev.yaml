@@ -41,6 +41,35 @@ services:
     networks:
       - django-network
 
+  rabbitmq:
+    container_name: dev-rabbitmq-broker
+    image: rabbitmq:alpine
+    volumes:
+      - ./dev-broker:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - django-network
+
+  worker:
+    container_name: dev-worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - dev.env
+    volumes:
+      - ./backend/:/app
+    command: celery -A core worker -l INFO
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - django-network
+
   frontend:
     container_name: frontend
     build:
