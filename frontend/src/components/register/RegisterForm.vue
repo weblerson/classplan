@@ -16,8 +16,10 @@
         <!--Inputs-->
         <FormInput ref="usernameFormInput" v-bind="this.inputProps1" />
         <FormInput ref="emailFormInput" v-bind="this.inputProps2" />
+        <FormInput ref="firstNameFormInput" v-bind="this.inputProps3" />
+        <FormInput ref="lastNameFormInput" v-bind="this.inputProps4" />
 
-        <div class="mt-3 d-grid col-4 mx-auto">
+        <div class="mt-3 mb-3 d-grid col-4 mx-auto">
             <input class="btn btn-dark btn-lg" type="submit" value="Enviar" @click="submitForm">
         </div>
     </div>
@@ -47,6 +49,18 @@ export default {
           label: "E-mail",
           name: "email",
           type: "email"
+        },
+        inputProps3: {
+          id: "first-name",
+          "label": "Nome",
+          "name": "first-name",
+          "type": "text"
+        },
+        inputProps4: {
+          id: "last-name",
+          "label": "Sobrenome",
+          "name": "last-name",
+          "type": "text"
         }
       }
   },
@@ -62,10 +76,12 @@ export default {
     submitForm() {
       const username = this.$refs.usernameFormInput.getValue();
       const email = this.$refs.emailFormInput.getValue();
+      const firstName = this.$refs.firstNameFormInput.getValue();
+      const lastName = this.$refs.lastNameFormInput.getValue();
 
       // Register request code
 
-      return console.log(`Username: ${username}\nEmail: ${email}`);
+      return console.log(`Username: ${username}\nEmail: ${email}\nNome: ${firstName}\nSobrenome: ${lastName}`);
     }
   }
 }
@@ -93,8 +109,12 @@ export default {
 }
 
 .form-container-size {
+    display: flex;
+    flex-direction: column;
+
     width: 50vw;
-    height: 55vh;
+
+    margin-bottom: 10px;
 
     box-shadow: 0 4px 20px 10px rgba(0, 0, 0, 0.5);
 }
