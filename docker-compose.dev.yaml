@@ -74,15 +74,14 @@ services:
     container_name: frontend
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./frontend/app:/app
-      - ./backend/staticfiles:/app/staticfiles
-      - ./backend/media:/app/media
+      - ./frontend:/app
+    command: npm run dev -- --host
     depends_on:
       - backend
     ports:
-      - "80:5173"
+      - "5173:5173"
     networks:
       - django-network
 
