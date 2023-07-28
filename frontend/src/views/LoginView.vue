@@ -7,21 +7,21 @@
 </template>
 
 <script>
-import LoginForm from "@/components/login/LoginForm.vue";
+import LoginForm from '@/components/login/LoginForm.vue'
 
-document.title = 'Entre';
+document.title = 'Entre'
 
 export default {
-  name: "LoginView",
+  name: 'LoginView',
 
-  data() {
+  data () {
     return {
-      title: "Entre",
+      title: 'Entre'
     }
   },
 
   components: {
-    LoginForm,
+    LoginForm
   }
 }
 </script>
