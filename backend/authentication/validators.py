@@ -6,4 +6,3 @@ no_whitespace_validator = RegexValidator(
     regex=r'^\S+$',
     message='Esse campo não pode conter espaços em branco'
 )
-

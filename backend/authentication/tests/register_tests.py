@@ -129,3 +129,19 @@ class RegisterTests(test.APITestCase):
         response = self.client.post(reverse('register_user'), data=self.data)
 
         self.assertNotIn('password', response.data)
+
+    def test_no_whitespace_validator(self):
+        """
+        Tests if no whitespace validator is working properly
+        """
+
+        keys = ['username', 'first_name', 'last_name']
+
+        for key in keys:
+            _data = self.data
+            _data[key] = 'tes t'
+
+            response = self.client.post(reverse('register_user'),  data=_data)
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn(key, response.data)
