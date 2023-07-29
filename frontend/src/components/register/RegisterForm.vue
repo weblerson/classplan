@@ -45,25 +45,29 @@ export default {
         id: 'username',
         label: 'Nome de Usuário',
         name: 'username',
-        type: 'text'
+        type: 'text',
+        errors: []
       },
       inputProps2: {
         id: 'email',
         label: 'E-mail',
         name: 'email',
-        type: 'email'
+        type: 'email',
+        errors: []
       },
       inputProps3: {
         id: 'first-name',
         label: 'Nome',
         name: 'first-name',
-        type: 'text'
+        type: 'text',
+        errors: []
       },
       inputProps4: {
         id: 'last-name',
         label: 'Sobrenome',
         name: 'last-name',
-        type: 'text'
+        type: 'text',
+        errors: []
       },
 
       backendBaseUrl: ''
@@ -96,9 +100,11 @@ export default {
         })
 
         console.log(response)
-        
-      } catch (error) {
-        console.log(error)
+      } catch (err) {
+        this.inputProps1.errors = err.response.data.username
+        this.inputProps2.errors = err.response.data.email
+        this.inputProps3.errors = err.response.data.first_name
+        this.inputProps4.errors = err.response.data.last_name
       }
     }
   },
