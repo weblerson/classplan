@@ -19,10 +19,10 @@ class RegisterView(views.APIView):
     def post(self, request: Request):
 
         data = {
-            'username': request.POST.get('username'),
-            'email': request.POST.get('email'),
-            'first_name': request.POST.get('first_name'),
-            'last_name': request.POST.get('last_name'),
+            'username': request.data.get('username'),
+            'email': request.data.get('email'),
+            'first_name': request.data.get('first_name'),
+            'last_name': request.data.get('last_name'),
             'password': ''
         }
 

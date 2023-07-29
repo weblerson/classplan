@@ -31,7 +31,7 @@ SECRET_KEY_JWT = config('SECRET_KEY_JWT', cast=str)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# ALLOWED_HOSTS
 
 
 # Application definition
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # External
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 
     # My Apps
     'healthcheck',
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,6 +64,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS
+
+CORS_ALLOWED_ORIGINS = config('ALLOWED_HOSTS', cast=Csv())
 
 ROOT_URLCONF = 'core.urls'
 

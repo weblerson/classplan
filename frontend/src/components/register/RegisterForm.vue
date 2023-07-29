@@ -28,6 +28,9 @@
 
 <script>
 import FormInput from '@/components/general/FormInput.vue'
+const axios = require('axios')
+
+document.title = 'Cadastre-se'
 
 export default {
   name: 'RegisterForm',
@@ -61,7 +64,9 @@ export default {
         label: 'Sobrenome',
         name: 'last-name',
         type: 'text'
-      }
+      },
+
+      backendBaseUrl: ''
     }
   },
 
@@ -73,20 +78,33 @@ export default {
   },
 
   methods: {
-    submitForm () {
+    async submitForm () {
       const username = this.$refs.usernameFormInput.getValue()
       const email = this.$refs.emailFormInput.getValue()
       const firstName = this.$refs.firstNameFormInput.getValue()
       const lastName = this.$refs.lastNameFormInput.getValue()
 
-      // Register request code
+      console.log(username, email, firstName, lastName)
 
-      return console.log(`Username: ${username}\nEmail: ${email}\nNome: ${firstName}\nSobrenome: ${lastName}`)
+      try {
+        const url = `${this.backendBaseUrl}/api/auth/register/`
+        const response = await axios.post(url, {
+          username: username,
+          email: email,
+          first_name: firstName,
+          last_name: lastName
+        })
+
+        console.log(response)
+        
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
 
-  mounted () {
-    console.log(process.env.VUE_APP_BACKEND_BASE_URL)
+  beforeMount () {
+    this.backendBaseUrl = process.env.VUE_APP_BACKEND_BASE_URL
   }
 }
 </script>
