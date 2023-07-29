@@ -28,12 +28,12 @@ class RegisterView(views.APIView):
 
         if User.objects.filter(username=data.get('username')):
             return Response({
-                'body': 'Já existe um cadastro com esse nome de usuário.'
+                'message': 'Já existe um cadastro com esse nome de usuário.'
             }, status=status.HTTP_409_CONFLICT)
 
         if User.objects.filter(email=data.get('email')):
             return Response({
-                'body': 'Já existe um cadastro com esse e-mail.'
+                'message': 'Já existe um cadastro com esse e-mail.'
             }, status=status.HTTP_409_CONFLICT)
 
         data['password'] = Utils.create_random_password()
@@ -48,5 +48,5 @@ class RegisterView(views.APIView):
             return Response(user_serializer_data, status=status.HTTP_201_CREATED)
 
         return Response({
-            'body': 'Erro interno do sistema.'
+            'message': 'Erro interno do sistema.'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

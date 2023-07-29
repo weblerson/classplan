@@ -4,6 +4,18 @@
     <p class="master-font text-light">Plano de Aula</p>
   </div>
 
+  <div v-if="this.$route.query.status == 1" class="alert alert-warning" role="alert">
+    Preencha todos os campos corretamente!
+  </div>
+
+  <div v-if="this.$route.query.status == 2" class="alert alert-warning" role="alert">
+    Já existe um usuário com as credenciais passadas!
+  </div>
+
+  <div v-if="this.$route.query.status == 3" class="alert alert-danger" role="alert">
+    Erro interno do sistema!
+  </div>
+
   <div class="container rounded-5 bg-light form-container-size">
     <div class="container d-flex align-items-start justify-content-center">
       <p class="title-font mt-1 text-dark">{{ this.title }}</p>
@@ -88,8 +100,6 @@ export default {
       const firstName = this.$refs.firstNameFormInput.getValue()
       const lastName = this.$refs.lastNameFormInput.getValue()
 
-      console.log(username, email, firstName, lastName)
-
       try {
         const url = `${this.backendBaseUrl}/api/auth/register/`
         const response = await axios.post(url, {
@@ -99,12 +109,38 @@ export default {
           last_name: lastName
         })
 
-        console.log(response)
+        this.handleResponse(response)
       } catch (err) {
-        this.inputProps1.errors = err.response.data.username
-        this.inputProps2.errors = err.response.data.email
-        this.inputProps3.errors = err.response.data.first_name
-        this.inputProps4.errors = err.response.data.last_name
+        this.handleResponse(err.response)
+      }
+    },
+
+    handleResponse (response) {
+      switch (response.status) {
+        case 200:
+          this.$router.push({ path: '/login', query: { status: 5 } })
+
+          break
+
+        case 400:
+          this.inputProps1.errors = response.data.username
+          this.inputProps2.errors = response.data.email
+          this.inputProps3.errors = response.data.first_name
+          this.inputProps4.errors = response.data.last_name
+
+          this.$router.replace({ path: '/register', query: { status: 1 } })
+
+          break
+
+        case 409:
+          this.$router.replace({ path: '/register', query: { status: 2 } })
+
+          break
+
+        case 500:
+          this.$router.replace({ path: '/register', query: { status: 3 } })
+
+          break
       }
     }
   },
