@@ -167,3 +167,5 @@ dev-broker/
 broker/
 staticfiles/
 test-worker-logs/
+
+.idea/*
