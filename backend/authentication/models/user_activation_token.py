@@ -9,4 +9,4 @@ class UserActivationToken(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self) -> str:
-        return f'Token de {self.user.username} - {"Usado" if self.active else "Não Usado"}'
+        return f'Token de {self.user.username} - {"Usado" if not self.active else "Não Usado"}'
