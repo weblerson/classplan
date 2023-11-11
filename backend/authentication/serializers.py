@@ -30,3 +30,17 @@ class UserSerializer(serializers.Serializer):
             last_name=validated_data.get('last_name'),
             is_active=False
         )
+
+
+class PasswordCreationSerializer(serializers.Serializer):
+
+    password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate(self, data: dict[str, str]) -> dict[str, str]:
+
+        if not data.get('password') == data.get('confirm_password'):
+
+            raise serializers.ValidationError('As senhas não coincidem')
+
+        return data
