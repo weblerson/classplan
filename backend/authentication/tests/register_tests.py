@@ -51,7 +51,7 @@ class RegisterTests(test.APITestCase):
         response = self.client.post(reverse('register_user'), data=self.data)
 
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-        self.assertIn('body', response.data)
+        self.assertIn('message', response.data)
 
     def test_user_creation_email_conflict(self):
         """
@@ -67,7 +67,7 @@ class RegisterTests(test.APITestCase):
         response = self.client.post(reverse('register_user'), data=_data)
 
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-        self.assertIn('body', response.data)
+        self.assertIn('message', response.data)
 
     def test_username_max_length_validation(self):
         """
