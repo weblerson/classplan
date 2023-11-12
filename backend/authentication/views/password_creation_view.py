@@ -61,6 +61,7 @@ class PasswordCreationView(views.APIView):
         user_activation_token.save()
 
         user.set_password(data.get('password'))
+        user.save()
 
         return Response({
             'message': 'Senha alterada com sucesso!'
