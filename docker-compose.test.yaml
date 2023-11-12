@@ -36,7 +36,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     env_file:
-      - dev.env
+      - test.env
     volumes:
       - ./backend/:/app
       - ./test-worker-logs:/app/logs
