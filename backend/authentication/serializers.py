@@ -34,8 +34,8 @@ class UserSerializer(serializers.Serializer):
 
 class PasswordCreationSerializer(serializers.Serializer):
 
-    password = serializers.CharField(required=True)
-    confirm_password = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, validators=[no_whitespace_validator])
+    confirm_password = serializers.CharField(required=True, validators=[no_whitespace_validator])
 
     def validate(self, data: dict[str, str]) -> dict[str, str]:
 
