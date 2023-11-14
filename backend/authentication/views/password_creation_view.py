@@ -21,9 +21,9 @@ class PasswordCreationView(views.APIView):
         user_activation_token: UserActivationToken = get_object_or_404(UserActivationToken, token=token)
 
         if user_activation_token.active:
-            return Response(status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
-        return Response(status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
     def post(request: Request, token: str) -> Response:
@@ -35,7 +35,7 @@ class PasswordCreationView(views.APIView):
 
         user_activation_token: UserActivationToken = UserActivationToken.objects.get(token=token)
         if not user_activation_token.active:
-            return Response(status.HTTP_409_CONFLICT)
+            return Response(status=status.HTTP_409_CONFLICT)
 
         serializer: PasswordCreationSerializer = PasswordCreationSerializer(data=data)
         if not serializer.is_valid():
@@ -50,6 +50,7 @@ class PasswordCreationView(views.APIView):
         user_activation_token.save()
 
         user.set_password(data.get('password'))
+        user.is_active = True
         user.save()
 
         return Response({
