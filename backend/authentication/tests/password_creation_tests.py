@@ -39,6 +39,19 @@ class PasswordCreationTests(test.APITestCase):
 
         return UserActivationToken.objects.get(user=user)
 
+    def change_user_password(self) -> User:
+
+        created_user: User = self.create_user_with_kwargs(**self.data)
+        created_user_token: UserActivationToken = PasswordCreationTests.get_token_by_user(created_user)
+
+        self.client.post(
+            reverse('password_creation', kwargs={'token': created_user_token.token}),
+            data=self.password_data)
+
+        changed_user = User.objects.get(username=self.data.get('username'))
+
+        return changed_user
+
     def test_password_creation_url(self) -> None:
         """
         Tests the password creation view
@@ -72,14 +85,7 @@ class PasswordCreationTests(test.APITestCase):
         Tests if user password really changes after created a new password
         """
 
-        created_user: User = self.create_user_with_kwargs(**self.data)
-        created_user_token: UserActivationToken = PasswordCreationTests.get_token_by_user(created_user)
-
-        self.client.post(
-            reverse('password_creation', kwargs={'token': created_user_token.token}),
-            data=self.password_data)
-
-        changed_user = User.objects.get(username=self.data.get('username'))
+        changed_user = self.change_user_password()
 
         self.assertTrue(changed_user.check_password(self.password_data.get('password')))
 
@@ -105,3 +111,12 @@ class PasswordCreationTests(test.APITestCase):
                 data=x), datas))
 
         list(map(lambda x: self.assertEqual(x.status_code, status.HTTP_400_BAD_REQUEST), responses))
+
+    def test_if_user_turns_active_when_created_password(self) -> None:
+        """
+        Tests if user account is activated when a password is created
+        """
+
+        changed_user = self.change_user_password()
+
+        self.assertTrue(changed_user.is_active)
