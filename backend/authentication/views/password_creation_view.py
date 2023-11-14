@@ -44,9 +44,7 @@ class PasswordCreationView(views.APIView):
 
         user_activation_token: UserActivationToken = UserActivationToken.objects.get(token=token)
         if not user_activation_token.active:
-            return Response({
-                'message': 'Token inválido'
-            }, status.HTTP_400_BAD_REQUEST)
+            return Response(status.HTTP_409_CONFLICT)
 
         serializer: PasswordCreationSerializer = PasswordCreationSerializer(data=data)
         if not serializer.is_valid():
