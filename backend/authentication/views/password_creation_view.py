@@ -16,15 +16,6 @@ class PasswordCreationView(views.APIView):
     schema = AutoSchema()
 
     @staticmethod
-    def get_serializer_errors(serializer: PasswordCreationSerializer):
-
-        if 'non_field_errors' in serializer.errors.keys():
-
-            return serializer.errors.get('non_field_errors')
-
-        return serializer.errors
-
-    @staticmethod
     def get(request: Request, token: str) -> Response:
 
         user_activation_token: UserActivationToken = get_object_or_404(UserActivationToken, token=token)
@@ -50,7 +41,7 @@ class PasswordCreationView(views.APIView):
         if not serializer.is_valid():
 
             return Response({
-                'message': PasswordCreationView.get_serializer_errors(serializer)
+                'message': serializer.errors
             }, status.HTTP_400_BAD_REQUEST)
 
         user: User = user_activation_token.user
