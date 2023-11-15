@@ -1,3 +1,16 @@
-from django.shortcuts import render
+from rest_framework import views
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import permissions
 
-# Create your views here.
+
+class HomeView(views.APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @staticmethod
+    def get(request: Request) -> Response:
+        return Response({
+            'username': request.user.get_username()
+        }, status=status.HTTP_200_OK)
