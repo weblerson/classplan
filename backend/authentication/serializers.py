@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import User
 from .validators import no_whitespace_validator
 
+from django.contrib import auth
+
 
 class UserSerializer(serializers.Serializer):
 
@@ -43,4 +45,34 @@ class PasswordCreationSerializer(serializers.Serializer):
 
             raise serializers.ValidationError('As senhas não coincidem')
 
+        return data
+
+
+class LoginSerializer(serializers.Serializer):
+
+    username = serializers.CharField(label='username', write_only=True)
+    password = serializers.CharField(
+        label='password',
+        style={'input_type': 'password'},
+        trim_whitespace=True,
+        write_only=True,
+        validators=[no_whitespace_validator]
+    )
+
+    def validate(self, data: dict[str, str]) -> dict[str, str]:
+        username = data.get('username')
+        password = data.get('password')
+
+        if username and password:
+            user = auth.authenticate(request=self.context.get('request'), username=username, password=password)
+
+            if not user:
+                msg = 'Acesso negado!'
+                raise serializers.ValidationError(msg, code='authorization')
+
+        else:
+            msg = 'Preencha todos os campos!'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        data['user'] = user
         return data
