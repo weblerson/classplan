@@ -13,9 +13,8 @@ class LoginView(views.APIView):
 
     permission_classes = [permissions.AllowAny]
 
-    @staticmethod
-    def post(request: Request) -> Response:
-        serializer = LoginSerializer(data=request.data, context={'request': request})
+    def post(self, request: Request) -> Response:
+        serializer = LoginSerializer(data=self.request.data, context={'request': self.request})
 
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data.get('user')
