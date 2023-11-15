@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # My Apps
     'healthcheck',
     'authentication',
+    'home'
 ]
 
 MIDDLEWARE = [
@@ -93,20 +94,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "BLACKLIST_AFTER_ROTATION": False,
-
-    "SIGNING_KEY": SECRET_KEY_JWT,
-
-    "AUTH_HEADER_TYPES": ("Bearer",),
-}
-
 
 
 # Database
