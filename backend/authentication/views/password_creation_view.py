@@ -3,6 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.schemas import AutoSchema
+from rest_framework import permissions
 
 from django.shortcuts import get_object_or_404
 
@@ -13,6 +14,7 @@ from ..models import UserActivationToken, User
 class PasswordCreationView(views.APIView):
 
     serializer_class = PasswordCreationSerializer
+    permission_classes = [permissions.AllowAny]
     schema = AutoSchema()
 
     @staticmethod

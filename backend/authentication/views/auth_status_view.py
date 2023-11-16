@@ -9,6 +9,8 @@ from ..models import User
 
 class AuthStatusView(views.APIView):
 
+    permission_classes = [permissions.AllowAny]
+
     @staticmethod
     def get(request: Request) -> Response:
         user: User = request.user

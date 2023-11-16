@@ -2,12 +2,9 @@ from rest_framework import views
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import permissions
 
 
 class HomeView(views.APIView):
-
-    permission_classes = [permissions.IsAuthenticated]
 
     @staticmethod
     def get(request: Request) -> Response:

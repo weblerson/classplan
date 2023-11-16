@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.schemas import AutoSchema
 from rest_framework import status
+from rest_framework import permissions
 
 from ..serializers import UserSerializer
 
@@ -14,6 +15,7 @@ from utils import Utils
 class RegisterView(views.APIView):
 
     serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
     schema = AutoSchema()
 
     def post(self, request: Request):
