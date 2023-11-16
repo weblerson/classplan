@@ -101,6 +101,22 @@ services:
     networks:
       - django-network
 
+  server:
+    container_name: dev-server
+    build:
+      context: ./frontend
+      dockerfile: ./nginx/Dockerfile.dev
+    volumes:
+      - ./frontend/app:/app
+      - ./backend/staticfiles:/app/staticfiles
+      - ./backend/media:/app/media
+    depends_on:
+      - backend
+    ports:
+      - "80:5173"
+    networks:
+      - django-network
+
 networks:
   django-network:
     driver: bridge
