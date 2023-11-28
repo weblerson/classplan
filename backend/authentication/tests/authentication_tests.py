@@ -1,9 +1,8 @@
 from django.urls import reverse
 
 from rest_framework import test
+from rest_framework.test import APIClient
 from rest_framework import status
-
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from authentication.models import User
 
@@ -19,34 +18,58 @@ class AuthenticationTest(test.APITestCase):
 
         cls.data = data
         cls.user = User.objects.create_user(**data)
-        cls.token_obtain_pair_view_url = reverse('token_obtain_pair')
-        cls.token_refresh_view_url = reverse('token_refresh')
+        cls.login_url = reverse('login')
+        cls.logout_url = reverse('logout')
+        cls.auth_status = reverse('auth_status')
 
-    def test_token_obtain_pair_view(self):
+        cls.client: APIClient = APIClient()
+
+    def test_session_authentication(self) -> None:
         """
-        Tests the generation of access and refresh tokens.
+        Tests if user is being authenticated
         """
 
-        response = self.client.post(self.token_obtain_pair_view_url, data=self.data)
+        self.client.login(**self.data)
+        response = self.client.get(self.auth_status)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertIn('access', response.data)
-        self.assertIn('refresh', response.data)
-
-    def test_token_refresh_view(self):
+    def test_logout(self) -> None:
         """
-        Tests the access token refresh using a previous refresh token.
+        Tests if user is not authenticated
         """
 
-        refresh = RefreshToken.for_user(self.user)
-
-        data = {
-            'refresh': str(refresh)
-        }
-
-        response = self.client.post(self.token_refresh_view_url, data=data)
+        self.client.login(**self.data)
+        response = self.client.get(self.auth_status)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertIn('access', response.data)
+        self.client.logout()
+        response = self.client.get(self.auth_status)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_if_login_view_is_authenticating_user(self) -> None:
+        """
+        Tests if the login view is authenticating the user
+        """
+
+        self.client.post(self.login_url, data=self.data)
+        response = self.client.get(self.auth_status)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_if_logout_view_is_closing_user_session(self) -> None:
+        """
+        Tests if the logout view is closing user session
+        """
+
+        self.client.post(self.login_url, data=self.data)
+        response = self.client.get(self.auth_status)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.client.get(self.logout_url)
+        response = self.client.get(self.auth_status)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
