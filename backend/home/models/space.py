@@ -9,3 +9,6 @@ class Space(models.Model):
     title = models.CharField(max_length=32, blank=False, default='Sem Título')
     objective = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_private = models.BooleanField(default=True)
+    is_personal = models.BooleanField(default=True)
+    partners = models.ManyToManyField(User)
