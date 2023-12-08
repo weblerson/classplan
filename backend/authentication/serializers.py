@@ -4,6 +4,8 @@ from .validators import no_whitespace_validator
 
 from django.contrib import auth
 
+from home.models import Space
+
 
 class UserSerializer(serializers.Serializer):
 
@@ -24,7 +26,7 @@ class UserSerializer(serializers.Serializer):
 
     def create(self, validated_data) -> User:
 
-        return User.objects.create_user(
+        user: User = User.objects.create_user(
             username=validated_data.get('username'),
             email=validated_data.get('email'),
             password=validated_data.get('password'),
@@ -32,6 +34,10 @@ class UserSerializer(serializers.Serializer):
             last_name=validated_data.get('last_name'),
             is_active=False
         )
+
+        # Trocar para serializer
+        space: Space = Space(user=user, is_personal=True)
+        return space.save()
 
 
 class PasswordCreationSerializer(serializers.Serializer):
