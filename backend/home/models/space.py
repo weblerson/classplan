@@ -12,3 +12,6 @@ class Space(models.Model):
     is_private = models.BooleanField(default=True)
     is_personal = models.BooleanField(default=False)
     partners = models.ManyToManyField(User, blank=True)
+
+    def __str__(self) -> str:
+        return f'Space of {self.user.username}'
