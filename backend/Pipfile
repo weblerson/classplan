@@ -12,6 +12,7 @@ psycopg2-binary = "*"
 gunicorn = "*"
 celery = "*"
 django-cors-headers = "*"
+pillow = "*"
 
 [dev-packages]
 
