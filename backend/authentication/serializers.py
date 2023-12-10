@@ -37,7 +37,9 @@ class UserSerializer(serializers.Serializer):
 
         # Trocar para serializer
         space: Space = Space(user=user, is_personal=True)
-        return space.save()
+        space.save()
+
+        return user
 
 
 class PasswordCreationSerializer(serializers.Serializer):
