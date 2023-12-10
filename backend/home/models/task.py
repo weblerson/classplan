@@ -1,6 +1,6 @@
 from django.db import models
 
-from space import Space
+from .space import Space
 
 
 class Task(models.Model):
