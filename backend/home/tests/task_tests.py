@@ -38,6 +38,19 @@ class TaskTests(test.APITestCase):
 
             return space
 
+    def _create_and_get_space_and_task(self, user_data: dict[str, str], task_data: dict[str, str]) -> tuple[Space, Task]:
+        space: Space = self._create_space(user_data)
+        _task_data: dict[str, str | int] = task_data.copy()
+
+        _task_data['space'] = space.id
+        serializer: TaskSerializer = TaskSerializer(data=_task_data)
+        if serializer.is_valid():
+            serializer.save()
+
+        task: Task = Task.objects.get(space=space)
+
+        return space, task
+
     def test_if_tasks_are_being_created(self) -> None:
         """
         Tests if tasks are being created and related to a space
@@ -58,15 +71,24 @@ class TaskTests(test.APITestCase):
         """
         Tests if tasks are being created and related to a space by a serializer
         """
-        space: Space = self._create_space(self.user_data)
-        task_data: dict[str, str | int] = self.task_data.copy()
-
-        task_data['space'] = space.id
-        serializer: TaskSerializer = TaskSerializer(data=task_data)
-        if serializer.is_valid():
-            serializer.save()
-
-        task: Task = Task.objects.get(space=space)
+        _, task = self._create_and_get_space_and_task(self.user_data, self.task_data)
 
         self.assertIsNotNone(task)
         self.assertEqual(task.name, self.task_data.get('name'))
+
+    def test_if_task_is_being_deleted_when_its_space_is_deleted(self) -> None:
+        """
+        Tests if a task is being deleted after it's associated space is deleted
+        """
+        space, task = self._create_and_get_space_and_task(self.user_data, self.task_data)
+
+        self.assertIsNotNone(space)
+        self.assertIsNotNone(task)
+
+        space.delete()
+
+        deleted_space = Space.objects.filter(id=space.id)
+        deleted_task = Task.objects.filter(id=task.id)
+
+        self.assertFalse(deleted_space.exists())
+        self.assertFalse(deleted_task.exists())
