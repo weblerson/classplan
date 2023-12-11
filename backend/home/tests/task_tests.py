@@ -66,9 +66,6 @@ class TaskTests(test.APITestCase):
         if serializer.is_valid():
             serializer.save()
 
-        else:
-            print(serializer.errors)
-
         task: Task = Task.objects.get(space=space)
 
         self.assertIsNotNone(task)
