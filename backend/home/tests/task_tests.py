@@ -5,6 +5,7 @@ from authentication.serializers import UserSerializer
 from authentication.models import User
 
 from ..models import Space, Task
+from ..serializers import TaskSerializer
 
 
 class TaskTests(test.APITestCase):
@@ -17,6 +18,13 @@ class TaskTests(test.APITestCase):
             'first_name': 'test',
             'last_name': 'user',
         }
+
+        cls.task_data: dict[str, str] = {
+            'name': 'Adv. Movie',
+        }
+
+        cls.default_name: str = 'Sem nome'
+        cls.default_is_done: bool = False
 
         cls.client: APIClient = APIClient()
 
@@ -41,4 +49,27 @@ class TaskTests(test.APITestCase):
         created: Task = Task.objects.get(space=space)
 
         self.assertIsNotNone(created)
+        self.assertEqual(created.name, self.default_name)
+        self.assertEqual(created.is_done, self.default_is_done)
+
         self.assertIsNotNone(created.space)
+
+    def test_if_task_serializer_is_creating_task(self) -> None:
+        """
+        Tests if tasks are being created and related to a space by a serializer
+        """
+        space: Space = self._create_space(self.user_data)
+        task_data: dict[str, str | int] = self.task_data.copy()
+
+        task_data['space'] = space.id
+        serializer: TaskSerializer = TaskSerializer(data=task_data)
+        if serializer.is_valid():
+            serializer.save()
+
+        else:
+            print(serializer.errors)
+
+        task: Task = Task.objects.get(space=space)
+
+        self.assertIsNotNone(task)
+        self.assertEqual(task.name, self.task_data.get('name'))
