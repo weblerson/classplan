@@ -7,19 +7,21 @@ from authentication.models import User
 from ..models import Space, Task
 from ..serializers import TaskSerializer
 
+Data = dict[str, str]
+
 
 class TaskTests(test.APITestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.user_data: dict[str, str] = {
+        cls.user_data: Data = {
             'username': 'testUser',
             'email': 'test@test.com',
             'first_name': 'test',
             'last_name': 'user',
         }
 
-        cls.task_data: dict[str, str] = {
+        cls.task_data: Data = {
             'name': 'Adv. Movie',
         }
 
@@ -29,7 +31,7 @@ class TaskTests(test.APITestCase):
         cls.client: APIClient = APIClient()
 
     @staticmethod
-    def _create_space(data: dict[str, str]) -> Space:
+    def _create_space(data: Data) -> Space:
         user_serializer: UserSerializer = UserSerializer(data=data)
         if user_serializer.is_valid():
             user: User = user_serializer.create(user_serializer.data)
@@ -38,7 +40,7 @@ class TaskTests(test.APITestCase):
 
             return space
 
-    def _create_and_get_space_and_task(self, user_data: dict[str, str], task_data: dict[str, str]) -> tuple[Space, Task]:
+    def _create_and_get_space_and_task(self, user_data: Data, task_data: Data) -> tuple[Space, Task]:
         space: Space = self._create_space(user_data)
         _task_data: dict[str, str | int] = task_data.copy()
 
