@@ -9,3 +9,4 @@ class TaskCreationSerializer(serializers.ModelSerializer):
 
         model = Task
         fields = ['name', 'is_done', 'space']
+        read_only_fields: list[str] = ['is_done', 'space']
