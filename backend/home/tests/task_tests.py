@@ -8,7 +8,7 @@ from authentication.serializers import UserSerializer
 from authentication.models import User
 
 from ..models import Space, Task
-from ..serializers import TaskSerializer
+from ..serializers import TaskCreationSerializer
 
 Data = dict[str, str]
 
@@ -69,7 +69,7 @@ class TaskTests(test.APITestCase):
         _task_data: dict[str, str | int] = task_data.copy()
 
         _task_data['space'] = space.id
-        serializer: TaskSerializer = TaskSerializer(data=_task_data)
+        serializer: TaskCreationSerializer = TaskCreationSerializer(data=_task_data)
         if serializer.is_valid():
             serializer.save()
 

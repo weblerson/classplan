@@ -9,11 +9,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework.schemas import AutoSchema
 
 from ..models import Space
-from ..serializers import TaskSerializer
+from ..serializers import TaskCreationSerializer
 
 
 class TaskCreationView(views.APIView):
-    serializer_class = TaskSerializer
+    serializer_class = TaskCreationSerializer
     schema: AutoSchema = AutoSchema()
 
     @staticmethod
@@ -37,7 +37,7 @@ class TaskCreationView(views.APIView):
         }
 
         try:
-            serializer: TaskSerializer = TaskSerializer(data=data)
+            serializer: TaskCreationSerializer = TaskCreationSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
 
