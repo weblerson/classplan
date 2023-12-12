@@ -1,5 +1,8 @@
 from rest_framework import test
 from rest_framework.test import APIClient
+from rest_framework.reverse import reverse
+
+from rest_framework import status
 
 from authentication.serializers import UserSerializer
 from authentication.models import User
@@ -14,15 +17,23 @@ class TaskTests(test.APITestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.user_data: Data = {
+        user_data: Data = {
             'username': 'testUser',
             'email': 'test@test.com',
             'first_name': 'test',
             'last_name': 'user',
+            'password': 'testPassword'
+        }
+        cls.user_data: Data = user_data
+        cls.user: User = User.objects.create_user(**user_data)
+
+        cls.auth_data: Data = {
+            'username': user_data.get('username'),
+            'password': 'testPassword'
         }
 
         cls.task_data: Data = {
-            'name': 'Adv. Movie',
+            'task_name': 'Adv. Movie',
         }
 
         cls.default_name: str = 'Sem nome'
@@ -31,17 +42,14 @@ class TaskTests(test.APITestCase):
         cls.client: APIClient = APIClient()
 
     @staticmethod
-    def _create_space(data: Data) -> Space:
-        user_serializer: UserSerializer = UserSerializer(data=data)
-        if user_serializer.is_valid():
-            user: User = user_serializer.create(user_serializer.data)
+    def _create_space(user: User) -> Space:
+        space: Space = Space(user=user, is_personal=True)
+        space.save()
 
-            space: Space = Space.objects.get(user=user)
+        return Space.objects.get(user=user)
 
-            return space
-
-    def _create_and_get_space_and_task(self, user_data: Data, task_data: Data) -> tuple[Space, Task]:
-        space: Space = self._create_space(user_data)
+    def _create_and_get_space_and_task(self, user: User, task_data: Data) -> tuple[Space, Task]:
+        space: Space = self._create_space(user)
         _task_data: dict[str, str | int] = task_data.copy()
 
         _task_data['space'] = space.id
@@ -57,7 +65,7 @@ class TaskTests(test.APITestCase):
         """
         Tests if tasks are being created and related to a space
         """
-        space: Space = self._create_space(self.user_data)
+        space: Space = self._create_space(self.user)
         task: Task = Task(space=space)
         task.save()
 
@@ -73,16 +81,16 @@ class TaskTests(test.APITestCase):
         """
         Tests if tasks are being created and related to a space by a serializer
         """
-        _, task = self._create_and_get_space_and_task(self.user_data, self.task_data)
+        _, task = self._create_and_get_space_and_task(self.user, self.task_data)
 
         self.assertIsNotNone(task)
-        self.assertEqual(task.name, self.task_data.get('name'))
+        self.assertEqual(task.name, self.default_name)
 
     def test_if_task_is_being_deleted_when_its_space_is_deleted(self) -> None:
         """
         Tests if a task is being deleted after it's associated space is deleted
         """
-        space, task = self._create_and_get_space_and_task(self.user_data, self.task_data)
+        space, task = self._create_and_get_space_and_task(self.user, self.task_data)
 
         self.assertIsNotNone(space)
         self.assertIsNotNone(task)
@@ -94,3 +102,19 @@ class TaskTests(test.APITestCase):
 
         self.assertFalse(deleted_space.exists())
         self.assertFalse(deleted_task.exists())
+
+    def test_if_task_is_being_created_by_api_view(self) -> None:
+        """
+        Tests if a task is being created by the API View
+        """
+
+        space: Space = self._create_space(self.user)
+        self.client.login(**self.auth_data)
+
+        task_data: dict[str, str | int] = self.task_data.copy()
+        task_data['space'] = space.id
+
+        response = self.client.post(reverse('task_creation', args=[space.id]), data=task_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('name'), self.task_data.get('task_name'))
