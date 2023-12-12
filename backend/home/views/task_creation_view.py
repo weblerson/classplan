@@ -2,6 +2,7 @@ from rest_framework import views
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import exceptions
 
 from django.shortcuts import get_object_or_404
 
@@ -22,11 +23,13 @@ class TaskCreationView(views.APIView):
         path: /spaces/<id>/tasks/
         """
 
-        # Verificar se o espaço pertence ao usuário autenticado
-
         task_name: str = request.data.get('task_name')
 
         space: Space = get_object_or_404(Space, id=space_id)
+        if space.user != request.user:
+            return Response({
+                'message': 'Espaço não relacionado ao usuário!'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         data: dict[str, str | int] = {
             'name': task_name,
@@ -35,7 +38,7 @@ class TaskCreationView(views.APIView):
 
         try:
             serializer: TaskSerializer = TaskSerializer(data=data)
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
 
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

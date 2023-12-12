@@ -24,12 +24,28 @@ class TaskTests(test.APITestCase):
             'last_name': 'user',
             'password': 'testPassword'
         }
+
+        alternative_user_data: Data = {
+            'username': 'aTestUser',
+            'email': 'aTest@test.com',
+            'first_name': 'aTest',
+            'last_name': 'aUser',
+            'password': 'aTestPassword'
+        }
         cls.user_data: Data = user_data
+        cls.alternative_user_data: Data = alternative_user_data
+
         cls.user: User = User.objects.create_user(**user_data)
+        cls.a_user: User = User.objects.create_user(**alternative_user_data)
 
         cls.auth_data: Data = {
             'username': user_data.get('username'),
             'password': 'testPassword'
+        }
+
+        cls.alternative_auth_data: Data = {
+            'username': alternative_user_data.get('username'),
+            'password': alternative_user_data.get('password')
         }
 
         cls.task_data: Data = {
@@ -118,3 +134,19 @@ class TaskTests(test.APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('name'), self.task_data.get('task_name'))
+
+    def test_if_task_cannot_be_created_on_strangers_space(self) -> None:
+        """
+        Tests if a task cannot be created on another user's space
+        """
+
+        space: Space = self._create_space(self.user)
+        self.client.login(**self.alternative_auth_data)
+
+        task_data: dict[str, str | int] = self.task_data.copy()
+        task_data['space'] = space.id
+
+        response = self.client.post(reverse('task_creation', args=[space.id]), data=task_data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data.get('message'), 'Espaço não relacionado ao usuário!')
