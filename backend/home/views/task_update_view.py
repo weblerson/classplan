@@ -1,43 +1,42 @@
 from rest_framework import views
+from rest_framework.schemas import AutoSchema
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 
-from rest_framework.schemas import AutoSchema
+from rest_framework import status
 
-from ..models import Space
-from ..serializers import TaskCreationSerializer
+from ..serializers import TaskUpdateSerializer
+from ..models import Space, Task
 
 
-class TaskCreationView(views.APIView):
-    serializer_class = TaskCreationSerializer
+class TaskUpdateView(views.APIView):
+
+    serializer_class = TaskUpdateSerializer
     schema: AutoSchema = AutoSchema()
 
     @staticmethod
-    def post(request: Request, space_id: int) -> Response:
+    def patch(request: Request, space_id: int, task_id: int) -> Response:
         """
-        Create a task to it's associated space
-        path: /spaces/<id>/tasks/
+        Update, partially, a task
+        path: /spaces/<id>/tasks/<id>/
         """
 
         space: Space = get_object_or_404(Space, id=space_id)
-        if space.user != request.user:
+        if request.user != space.user:
             return Response({
                 'message': 'Espaço não relacionado ao usuário!'
             }, status=status.HTTP_403_FORBIDDEN)
 
-        request.data._mutable = True
-        request.data['space'] = space.id
-        request.data._mutable = False
+        task: Task = get_object_or_404(Task, id=task_id)
 
         try:
-            serializer: TaskCreationSerializer = TaskCreationSerializer(data=request.data)
+            serializer: TaskUpdateSerializer = TaskUpdateSerializer(task, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(status=status.HTTP_200_OK)
 
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

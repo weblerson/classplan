@@ -49,7 +49,11 @@ class TaskTests(test.APITestCase):
         }
 
         cls.task_data: Data = {
-            'task_name': 'Adv. Movie',
+            'name': 'Adv. Movie',
+        }
+
+        cls.update_task_data: Data = {
+            'name': 'Horror Movie'
         }
 
         cls.default_name: str = 'Sem nome'
@@ -62,7 +66,9 @@ class TaskTests(test.APITestCase):
         space: Space = Space(user=user, is_personal=True)
         space.save()
 
-        return Space.objects.get(user=user)
+        space = Space.objects.get(user=user)
+
+        return space
 
     def _create_and_get_space_and_task(self, user: User, task_data: Data) -> tuple[Space, Task]:
         space: Space = self._create_space(user)
@@ -100,7 +106,7 @@ class TaskTests(test.APITestCase):
         _, task = self._create_and_get_space_and_task(self.user, self.task_data)
 
         self.assertIsNotNone(task)
-        self.assertEqual(task.name, self.default_name)
+        self.assertEqual(task.name, self.task_data.get('name'))
 
     def test_if_task_is_being_deleted_when_its_space_is_deleted(self) -> None:
         """
@@ -133,7 +139,7 @@ class TaskTests(test.APITestCase):
         response = self.client.post(reverse('task_creation', args=[space.id]), data=task_data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get('name'), self.task_data.get('task_name'))
+        self.assertEqual(response.data.get('name'), self.task_data.get('name'))
 
     def test_if_task_cannot_be_created_on_strangers_space(self) -> None:
         """
@@ -150,3 +156,84 @@ class TaskTests(test.APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data.get('message'), 'Espaço não relacionado ao usuário!')
+
+    def test_if_task_cannot_be_updated_on_strangers_space(self) -> None:
+        """
+        Tests if a task cannot be updated on another user's space
+        """
+
+        space, task = self._create_and_get_space_and_task(self.user, self.task_data)
+        self.client.login(**self.alternative_auth_data)
+
+        response = self.client.patch(reverse('task_update', args=[space.id, task.id]), data=self.task_data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data.get('message'), 'Espaço não relacionado ao usuário!')
+
+    def test_if_task_cannot_be_update_from_a_none_space(self) -> None:
+        """
+        Tests if a task can only be updated from an existent space
+        """
+
+        space, task = self._create_and_get_space_and_task(self.user, self.task_data)
+        self.client.login(**self.auth_data)
+
+        response = self.client.patch(
+            reverse('task_update', args=[space.id + 1, task.id]), data=self.update_task_data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.patch(
+            reverse('task_update', args=[space.id, task.id]), data=self.update_task_data
+        )
+
+        task = Task.objects.get(pk=task.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(task)
+        self.assertEqual(task.name, self.update_task_data.get('name'))
+
+    def test_if_update_view_returns_http_404_for_a_nonexistent_task(self) -> None:
+        """
+        Tests if update view returns Http 404 for a nonexistent task
+        """
+
+        space: Space = self._create_space(self.user)
+        self.client.login(**self.auth_data)
+
+        response = self.client.patch(
+            reverse('task_update', args=[space.id, 1]), data=self.update_task_data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_if_update_view_return_http_404_for_both_nonexistent_space_and_task(self) -> None:
+        """
+        Tests if update view returns Http 404 for both nonexistent space and task
+        """
+
+        self.client.login(**self.auth_data)
+
+        response = self.client.patch(
+            reverse('task_update', args=[5, 7]), data=self.update_task_data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_if_task_update_view_returns_http_400_for_invalid_request_body_keys(self) -> None:
+        """
+        Tests if TaskUpdateView return Http 400 for invalid request body keys
+        """
+
+        space, task = self._create_and_get_space_and_task(self.user, self.task_data)
+        self.client.login(**self.auth_data)
+
+        _data: Data = self.update_task_data.copy()
+        _data['invalid_key'] = 'invalid_value'
+
+        response = self.client.patch(
+            reverse('task_update', args=[space.id, task.id]), data=_data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

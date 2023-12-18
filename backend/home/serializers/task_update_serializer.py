@@ -3,13 +3,12 @@ from rest_framework import serializers
 from ..models import Task
 
 
-class TaskCreationSerializer(serializers.ModelSerializer):
+class TaskUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
 
-        model = Task
-        fields = ['name', 'is_done', 'space']
-        read_only_fields: list[str] = ['is_done']
+        model: Task = Task
+        fields: list[str] = ['name', 'is_done', 'space']
 
     def to_internal_value(self, data: dict[str, str | bool]):
         fields: set[str] = set(self.fields.keys())
